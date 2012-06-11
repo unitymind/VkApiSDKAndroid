@@ -123,13 +123,13 @@ public class Service extends android.app.Service {
         account.restore();
         broadcastState();
         Log.d(TAG, account.toString());
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                broadcastState();
-            }
-        }, 0, 60000);
+//        Timer timer = new Timer();
+//        timer.scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                broadcastState();
+//            }
+//        }, 0, 60000);
     }
 
     @Override

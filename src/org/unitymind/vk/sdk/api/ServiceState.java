@@ -3,8 +3,8 @@ package org.unitymind.vk.sdk.api;
 import android.os.Bundle;
 import android.util.Log;
 
-public class State {
-    private final String TAG = State.class.getName();
+public class ServiceState {
+    private final String TAG = ServiceState.class.getName();
 
     public boolean isInit = false;
     public boolean registered;

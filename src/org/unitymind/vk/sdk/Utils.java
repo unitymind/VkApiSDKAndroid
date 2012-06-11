@@ -1,5 +1,7 @@
 package org.unitymind.vk.sdk;
 
+import android.os.Bundle;
+import android.os.Message;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -15,6 +17,14 @@ import java.util.regex.Pattern;
 
 public class Utils {
     static Gson gson = new Gson();
+
+    public static Message composeServiceRequest (int serviceAction, Map<String, String> params) {
+        Message request = Message.obtain(null, serviceAction);
+        Bundle payload = new Bundle();
+        payload.putString("params", toJson(params));
+        request.setData(payload);
+        return request;
+    }
 
     public static HashMap<String, Object> parse(String json) {
         JsonParser parser = new JsonParser();
