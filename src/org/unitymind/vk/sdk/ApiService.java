@@ -38,11 +38,13 @@ public class ApiService extends Service {
                     account.save();
                     Log.i(TAG, "Account credentials is saved!");
                     Log.d(TAG, account.toString());
+                    broadcastState();
                     break;
 
                 case MSG_CLEAR_CREDENTIALS:
                     account.clear();
                     Log.w(TAG, "Account credentials is cleared!");
+                    broadcastState();
                     break;
 
                 case MSG_GET_STATE:
@@ -119,14 +121,10 @@ public class ApiService extends Service {
         account.restore();
         Log.d(TAG, account.toString());
         Timer timer = new Timer();
-        final Intent intent = new Intent(SERVICE_STATE);
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                intent.putExtra("registered", account.access_token != null);
-                intent.putExtra("hasNetwork", true);
-                sendBroadcast(intent);
-                Log.d(TAG, "Service state broadcasted");
+                broadcastState();
             }
         }, 0, 60000);
     }
@@ -134,5 +132,13 @@ public class ApiService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return messenger.getBinder();
+    }
+
+    private void broadcastState() {
+        Intent intent = new Intent(SERVICE_STATE);
+        intent.putExtra("registered", account.access_token != null);
+        intent.putExtra("hasNetwork", true);
+        sendBroadcast(intent);
+        Log.d(TAG, "Service state broadcasted!");
     }
 }
