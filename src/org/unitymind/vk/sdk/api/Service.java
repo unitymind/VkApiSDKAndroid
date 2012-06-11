@@ -1,19 +1,21 @@
-package org.unitymind.vk.sdk;
+package org.unitymind.vk.sdk.api;
 
-import android.app.Service;
 import android.content.Intent;
 import android.os.*;
 import android.util.Log;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import org.unitymind.vk.sdk.Account;
+import org.unitymind.vk.sdk.Constants;
+import org.unitymind.vk.sdk.Utils;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ApiService extends Service {
-    private static final String TAG = ApiService.class.getName();
+public class Service extends android.app.Service {
+    private static final String TAG = Service.class.getName();
 
-    public static final String SERVICE_STATE  = "org.unitymind.vk.sdk.SERVICE_STATE";
+    public static final String STATE = "org.unitymind.vk.sdk.api.SERVICE_STATE";
 
     public static final int MSG_CLIENT_API_CALL = 1;
     public static final int MSG_TOKEN_API_CALL = 2;
@@ -61,7 +63,7 @@ public class ApiService extends Service {
                     request_params.put("client_id", Constants.CLIENT_ID);
                     request_params.put("client_secret", Constants.CLIENT_SECRET);
 
-                    ApiRestClient.get(msg_data.getString("method"), request_params, new AsyncHttpResponseHandler() {
+                    RestClient.get(msg_data.getString("method"), request_params, new AsyncHttpResponseHandler() {
                         @Override
                         public void onSuccess(String body) {
                             Log.d(TAG, "response=" + body);
@@ -117,8 +119,9 @@ public class ApiService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        account = new Account(ApiService.this);
+        account = new Account(Service.this);
         account.restore();
+        broadcastState();
         Log.d(TAG, account.toString());
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -135,7 +138,7 @@ public class ApiService extends Service {
     }
 
     private void broadcastState() {
-        Intent intent = new Intent(SERVICE_STATE);
+        Intent intent = new Intent(STATE);
         intent.putExtra("registered", account.access_token != null);
         intent.putExtra("hasNetwork", true);
         sendBroadcast(intent);

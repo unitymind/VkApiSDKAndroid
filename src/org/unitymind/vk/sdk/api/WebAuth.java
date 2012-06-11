@@ -1,6 +1,8 @@
-package org.unitymind.vk.sdk;
+package org.unitymind.vk.sdk.api;
 
 import android.util.Log;
+import org.unitymind.vk.sdk.Utils;
+
 import java.net.URLEncoder;
 
 public class WebAuth {
@@ -25,7 +27,7 @@ public class WebAuth {
         Log.d(TAG, "access_token=" + access_token);
         String user_id=Utils.extractPattern(url, "user_id=(\\d*)");
         Log.d(TAG, "user_id=" + user_id);
-        if(user_id==null || user_id.length() == 0 || access_token == null || access_token.length() == 0)
+        if(user_id == null || user_id.length() == 0 || access_token == null || access_token.length() == 0)
             throw new Exception("Failed to parse redirect url " + url);
         return new String[]{access_token, user_id};
     }

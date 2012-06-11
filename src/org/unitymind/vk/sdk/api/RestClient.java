@@ -1,12 +1,12 @@
-package org.unitymind.vk.sdk;
+package org.unitymind.vk.sdk.api;
 
 import android.util.Log;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
-public class ApiRestClient {
-    private static final String TAG = ApiRestClient.class.getName();
+public class RestClient {
+    private static final String TAG = RestClient.class.getName();
 
     public static final String BASE_URL = "https://api.vk.com/method/";
 
