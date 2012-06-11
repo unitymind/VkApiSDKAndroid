@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
     static Gson gson = new Gson();
@@ -47,5 +49,13 @@ public class Utils {
 
     public static String toJson(Map<String, String> map) {
         return gson.toJson(map);
+    }
+
+    public static String extractPattern(String string, String pattern){
+        Pattern p = Pattern.compile(pattern);
+        Matcher m = p.matcher(string);
+        if (!m.find())
+            return null;
+        return m.toMatchResult().group(1);
     }
 }
