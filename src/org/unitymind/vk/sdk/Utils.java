@@ -26,6 +26,15 @@ public class Utils {
         return request;
     }
 
+    public static Message composeApiRequest (int serviceAction, String method, Map<String, String> params) {
+        Message request = Message.obtain(null, serviceAction);
+        Bundle payload = new Bundle();
+        payload.putString("method", method);
+        payload.putString("params", toJson(params));
+        request.setData(payload);
+        return request;
+    }
+
     public static HashMap<String, Object> parse(String json) {
         JsonParser parser = new JsonParser();
         JsonObject object = (JsonObject) parser.parse(json);
