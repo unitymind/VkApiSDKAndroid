@@ -35,7 +35,7 @@ public class Utils {
         return request;
     }
 
-    public static HashMap<String, Object> parse(String json) {
+    public static HashMap<String, Object> parseJson(String json) {
         JsonParser parser = new JsonParser();
         JsonObject object = (JsonObject) parser.parse(json);
         Set<Map.Entry<String, JsonElement>> set = object.entrySet();
@@ -46,7 +46,7 @@ public class Utils {
             String key = entry.getKey();
             JsonElement value = entry.getValue();
             if (!value.isJsonPrimitive()) {
-                map.put(key, parse(value.toString()));
+                map.put(key, parseJson(value.toString()));
             } else {
                 map.put(key, value.getAsString());
             }
@@ -57,7 +57,7 @@ public class Utils {
     public static RequestParams paramsFromJson(String json) {
         RequestParams params = new RequestParams();
 
-        Map<String, Object> api_params = Utils.parse(json);
+        Map<String, Object> api_params = Utils.parseJson(json);
 
         for (Map.Entry<String, Object> entry : api_params.entrySet()) {
             params.put(entry.getKey(), entry.getValue().toString());

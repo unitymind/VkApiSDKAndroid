@@ -7,7 +7,7 @@ import android.preference.PreferenceManager;
 
 public class Account {
     public String access_token;
-    public long user_id;
+    public String user_id;
 
     private SharedPreferences preferences;
 
@@ -18,17 +18,17 @@ public class Account {
     public void save() {
         Editor editor = preferences.edit();
         editor.putString("access_token", access_token);
-        editor.putLong("user_id", user_id);
+        editor.putString("user_id", user_id);
         editor.commit();
     }
 
     public void restore() {
         access_token = preferences.getString("access_token", null);
-        user_id = preferences.getLong("user_id", 0);
+        user_id = preferences.getString("user_id", null);
     }
 
     public void clear() {
-        user_id = 0;
+        user_id = null;
         access_token = null;
         save();
     }

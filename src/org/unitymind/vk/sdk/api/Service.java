@@ -9,20 +9,13 @@ import org.unitymind.vk.sdk.Account;
 import org.unitymind.vk.sdk.Constants;
 import org.unitymind.vk.sdk.Utils;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Service extends android.app.Service {
     private static final String TAG = Service.class.getName();
 
     public static final String STATE = "org.unitymind.vk.sdk.api.SERVICE_STATE";
-
-    public static final int MSG_CLIENT_API_CALL = 1;
-    public static final int MSG_TOKEN_API_CALL = 2;
-
-    public static final int MSG_SET_CREDENTIALS = 3;
-    public static final int MSG_CLEAR_CREDENTIALS = 4;
-    public static final int MSG_GET_STATE = 5;
 
     private Account account;
 
@@ -30,26 +23,31 @@ public class Service extends android.app.Service {
 
         @Override
         public void handleMessage(Message msg) {
-            Bundle msg_data = msg.getData();
+            Bundle msgData = msg.getData();
             final Messenger replyTo = msg.replyTo;
 
             switch (msg.what) {
-                case MSG_SET_CREDENTIALS:
-                    account.user_id = msg_data.getLong("user_id");
-                    account.access_token = msg_data.getString("access_token");
+                case ServiceAction.SET_CREDENTIALS:
+                    Map<String, Object> params = extractParams(msgData);
+
+                    account.user_id = (String) params.get("user_id");
+                    account.access_token = (String) params.get("access_token");
                     account.save();
+
                     Log.i(TAG, "Account credentials is saved!");
                     Log.d(TAG, account.toString());
+
                     broadcastState();
+
                     break;
 
-                case MSG_CLEAR_CREDENTIALS:
+                case ServiceAction.CLEAR_CREDENTIALS:
                     account.clear();
                     Log.w(TAG, "Account credentials is cleared!");
                     broadcastState();
                     break;
 
-                case MSG_GET_STATE:
+                case ServiceAction.GET_STATE:
                     Bundle payload = new Bundle();
                     payload.putBoolean("registered", account.access_token != null);
                     payload.putBoolean("hasNetwork", true);
@@ -57,13 +55,13 @@ public class Service extends android.app.Service {
                     sendServiceReply(replyTo, payload);
                     break;
 
-                case MSG_CLIENT_API_CALL:
-                    RequestParams request_params = Utils.paramsFromJson(msg_data.getString("params"));
+                case ServiceAction.CLIENT_API_CALL:
+                    RequestParams request_params = Utils.paramsFromJson(msgData.getString("params"));
 
                     request_params.put("client_id", Constants.CLIENT_ID);
                     request_params.put("client_secret", Constants.CLIENT_SECRET);
 
-                    RestClient.get(msg_data.getString("method"), request_params, new AsyncHttpResponseHandler() {
+                    RestClient.get(msgData.getString("method"), request_params, new AsyncHttpResponseHandler() {
                         @Override
                         public void onSuccess(String body) {
                             Log.d(TAG, "response=" + body);
@@ -78,9 +76,15 @@ public class Service extends android.app.Service {
                     });
 
                     break;
+                case ServiceAction.TOKEN_API_CALL:
+                    break;
                 default:
                     super.handleMessage(msg);
             }
+        }
+
+        private Map<String, Object> extractParams(Bundle mBundle) {
+            return Utils.parseJson(mBundle.getString("params"));
         }
 
         private void sendApiReply(Messenger replyTo, boolean success, String body) {
